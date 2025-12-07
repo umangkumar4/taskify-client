@@ -18,7 +18,7 @@ const getMessages = async (req, res) => {
         }
         const messages = await Message_1.Message.find({
             chatroomId,
-            isDeleted: false
+            // isDeleted: false
         })
             .sort({ createdAt: -1 })
             .skip(skip)
@@ -27,7 +27,7 @@ const getMessages = async (req, res) => {
             .populate('quotedMessage.senderId', 'username firstName lastName avatar');
         const total = await Message_1.Message.countDocuments({
             chatroomId,
-            isDeleted: false
+            //isDeleted: false
         });
         res.json({
             messages: messages.reverse(),

@@ -70,6 +70,7 @@ const initializeSocket = (httpServer) => {
         // Typing indicator
         socket.on('typing', ({ chatroomId, isTyping }) => {
             socket.to(chatroomId).emit('typing', {
+                chatroomId,
                 userId: socket.user?._id,
                 username: socket.user?.username,
                 isTyping
@@ -110,5 +111,6 @@ const initializeSocket = (httpServer) => {
             }
         });
     });
+    return exports.io;
 };
 exports.initializeSocket = initializeSocket;
