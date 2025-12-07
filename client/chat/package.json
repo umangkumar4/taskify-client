@@ -1,0 +1,44 @@
+{
+  "name": "chat",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@reduxjs/toolkit": "^2.11.0",
+    "axios": "^1.13.2",
+    "date-fns": "^4.1.0",
+    "emoji-picker-react": "^4.16.1",
+    "jwt-decode": "^4.0.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-icons": "^5.5.0",
+    "react-redux": "^9.2.0",
+    "react-router-dom": "^7.10.1",
+    "socket.io-client": "^4.8.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.1.0",
+    "@tailwindcss/postcss": "^4.1.17",
+    "@types/node": "^20.12.7",
+    "@types/react": "^18.2.79",
+    "@types/react-dom": "^18.2.25",
+    "@types/react-router-dom": "^5.3.3",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.19",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.6",
+    "globals": "^15.0.0",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^4.1.17",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.11",
+    "vite-plugin-pwa": "^1.2.0"
+  }
+}

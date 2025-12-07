@@ -1,0 +1,85 @@
+DEPLOYMENT GUIDE FOR CHATTING APP (MERN STACK)
+
+This guide explains how to deploy your Chatting App for free using:
+1. Database: MongoDB Atlas (Free Tier)
+2. Backend: Render (Free Tier)
+3. Frontend: Vercel (Free Tier)
+
+================================================================================
+STEP 1: PREPARATION (GITHUB)
+================================================================================
+1. Ensure your project is pushed to a GitHub repository.
+2. Your folder structure is likely:
+   /root
+     /client
+       /chat (Frontend code)
+     /server (Backend code)
+
+================================================================================
+STEP 2: DATABASE SETUP (MONGODB ATLAS)
+================================================================================
+1. Go to https://www.mongodb.com/cloud/atlas and sign up.
+2. Create a specific "Cluster" (Select "Shared" -> "FREE").
+3. Create a Database User (Username/Password) and verify network access (Allow access from anywhere: 0.0.0.0/0).
+4. Get your Connection String:
+   - Click "Connect" -> "Connect your application".
+   - Copy the string (looks like: `mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority`).
+   - Replace `<password>` with your actual password.
+
+================================================================================
+STEP 3: BACKEND DEPLOYMENT (RENDER)
+================================================================================
+1. Go to https://dashboard.render.com/ and sign up with GitHub.
+2. Click "New +" -> "Web Service".
+3. Connect your GitHub repository.
+4. Configure the settings:
+   - Name: `chat-app-backend` (or similar)
+   - Root Directory: `server` (Important: Point to your backend folder)
+   - Environment: `Node`
+   - Build Command: `npm install && npm run build` (Ensure you have a build script in server/package.json that compiles TS to JS)
+     * If you are just using TS directly in dev, you might need to add a build script like "tsc" and change start to "node dist/index.js".
+     * A common setup is:
+       Build: `npm install && npx tsc`
+       Start: `node dist/index.js` (Check your tsconfig and package.json)
+5. **Environment Variables** (Click "Advanced" or "Environment"):
+   Add the following keys and values:
+   - `MONGO_URI`: (Paste your MongoDB Connection String from Step 2)
+   - `JWT_SECRET`: (Create a confusing long random string, e.g., "mysecretkey123")
+   - `PORT`: `10000` (Render usually sets this, but good to have)
+   - `CLIENT_URL`: `https://YOUR-VERCEL-APP-URL.vercel.app` (You will get this in Step 4, you can come back and update it later).
+
+6. Click "Create Web Service". Wait for it to deploy.
+7. Copy the "onrender.com" URL (e.g., `https://chat-backend.onrender.com`).
+
+================================================================================
+STEP 4: FRONTEND DEPLOYMENT (VERCEL)
+================================================================================
+1. Go to https://vercel.com/ and sign up with GitHub.
+2. Click "Add New..." -> "Project".
+3. Import your GitHub repository.
+4. Configure the project:
+   - **Framework Preset**: Vite
+   - **Root Directory**: Click "Edit" and select `client/chat` (Important!).
+5. **Environment Variables**:
+   Add the following:
+   - `VITE_SOCKET_URL`: (Paste your Render Backend URL from Step 3, e.g., `https://chat-backend.onrender.com`)
+   (Note: Vite requires variables to start with VITE_)
+
+6. Click "Deploy".
+7. Once finished, you will get a domain (e.g., `https://chat-app-frontend.vercel.app`).
+
+================================================================================
+STEP 5: FINAL CONNECTION (IMPORTANT)
+================================================================================
+1. Go back to your **Render Dashboard** (Backend).
+2. Go to "Environment" variables.
+3. Update `CLIENT_URL` to your new Vercel URL (e.g., `https://chat-app-frontend.vercel.app`).
+   * Note: Remove any trailing slash `/` from the URL.
+4. Go to console/dashboard and **Redeploy** the backend service so it picks up the new variable (CORS settings depend on this).
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+- **CORS Error**: If the frontend says "Network Error" or CORS issues, check that `CLIENT_URL` in Backend matches your Frontend URL exactly.
+- **Socket Connection**: Ensure `VITE_SOCKET_URL` does NOT end with a slash `/`.
+- **White Screen**: Check the console (F12) for errors.
