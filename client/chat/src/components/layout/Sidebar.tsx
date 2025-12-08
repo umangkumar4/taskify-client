@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../store/store';
 import { ChatroomList } from '../chatroom/ChatroomList';
 import { CreateChatModal } from '../chat/CreateChatModal';
-import { MdChat, MdSearch, MdMoreVert, MdLogout } from 'react-icons/md';
+import { MdChat, MdSearch, MdMoreVert, MdLogout, MdSettings } from 'react-icons/md';
 import { logout } from '../../store/slices/authSlice';
 import { Logo } from '../common/Logo';
 import api from '../../services/api';
@@ -62,11 +62,13 @@ export const Sidebar = () => {
     return (
         <div className="w-full h-full flex flex-col bg-white">
             {/* Header */}
-            <div className="h-20 bg-gradient-to-r from-[#1e3a5f] to-[#2d5a7b] px-4 flex items-center justify-between border-b border-gray-600 shadow-lg shrink-0">
+            <div className="h-16 bg-[#00A884] 
+    px-4 flex items-center justify-between border-b border-[#009f80]
+    shadow-[inset_0_-2px_4px_rgba(0,0,0,0.2),_0_4px_8px_rgba(0,0,0,0.15)]">
                 <div className="flex items-center gap-3">
                     {/* Compact Logo */}
-                    <div className="">
-                        <Logo className="w-20 h-20" textClassName="text-lg text-white" />
+                    <div className="flex items-center">
+                        <Logo className="w-23 h-23" textClassName="text-base text-white" />
                     </div>
                 </div>
                 <div className="flex gap-2 text-white items-center">
@@ -84,7 +86,7 @@ export const Sidebar = () => {
                             className={`p-2 hover:bg-white/10 rounded-full transition-colors ${isMenuOpen ? 'bg-white/10' : ''}`}
                             title="Menu"
                         >
-                            <MdMoreVert className="w-6 h-6" />
+                            <MdSettings className="w-6 h-6" />
                         </button>
 
                         {isMenuOpen && (
@@ -104,21 +106,13 @@ export const Sidebar = () => {
                         )}
 
                     </div>
-                    <div className="flex items-center justify-between shrink-0">
-                        <img
-                            src={user?.avatar}
-                            alt="Profile"
-                            className="w-12 h-12 rounded-full object-cover cursor-pointer border-2 border-white/30 hover:border-white/60 transition-all shadow-md"
-                            title={user?.username}
-                        />
-                    </div>
                 </div>
             </div>
 
             {/* Search Bar */}
             <div className="p-2 bg-white border-b border-gray-100 shrink-0">
                 <div className="bg-[#F0F2F5] rounded-lg px-3 py-1.5 flex items-center gap-3 focus-within:bg-white focus-within:ring-1 focus-within:ring-green-400 transition-all shadow-sm">
-                    <MdSearch className="w-5 h-5 text-[#54656F]" />
+                    <MdSearch className="w-5 h-8 text-[#54656F]" />
                     <input
                         type="text"
                         placeholder="Search or start new chat"
@@ -130,7 +124,7 @@ export const Sidebar = () => {
             </div>
 
             {/* Chat List */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar">
+            <div className="flex-1 overflow-y-auto custom-scrollbar min-h-0">
                 <ChatroomList
                     searchQuery={searchQuery}
                     setSearchQuery={setSearchQuery}
@@ -138,6 +132,24 @@ export const Sidebar = () => {
                     isSearching={isSearching}
                 />
             </div>
+
+            {/* User Profile Footer */}
+            <div className="h-16 bg-[#00A884] border-t border-gray-200 px-4 flex items-center justify-between shrink-0">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <img
+                        src={user?.avatar}
+                        alt="Profile"
+                        className="w-10 h-10 rounded-full object-cover cursor-pointer border-2 border-[#00A884]/30 hover:border-[#00A884] transition-all shadow-sm shrink-0"
+                        title={user?.username}
+                    />
+                    <div className="min-w-0 flex-1">
+                        <p className="text-sm font-semibold text-gray-800 truncate">{user?.username}</p>
+                        <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                    </div>
+                </div>
+            </div>
+
+
 
             <CreateChatModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
         </div>

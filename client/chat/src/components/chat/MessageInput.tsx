@@ -120,7 +120,7 @@ export const MessageInput = ({ chatroomId }: MessageInputProps) => {
     const isEditing = editingMessage && editingMessage.chatroomId === chatroomId;
 
     return (
-        <div className="p-3 bg-[#F0F2F5] relative">
+        <div className="p-3 bg-[#F0F2F5] relative shrink-0">
             {/* Emoji Picker Popover */}
             {showPicker && (
                 <div className="absolute bottom-20 left-4 z-50 shadow-2xl rounded-lg">
