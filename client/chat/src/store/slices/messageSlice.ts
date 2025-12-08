@@ -85,7 +85,16 @@ const messageSlice = createSlice({
             const { chatroomId, messageId } = action.payload;
             const messages = state.messages[chatroomId];
             if (messages) {
-                state.messages[chatroomId] = messages.filter((m) => m._id !== messageId);
+                const index = messages.findIndex((m) => m._id === messageId);
+                if (index !== -1) {
+                    // Mark as deleted instead of removing
+                    messages[index] = {
+                        ...messages[index],
+                        isDeleted: true,
+                        content: 'This message was deleted',
+                        deletedAt: new Date().toISOString()
+                    };
+                }
             }
         },
         setEditingMessage: (state, action) => {

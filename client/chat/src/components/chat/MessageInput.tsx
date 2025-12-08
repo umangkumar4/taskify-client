@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store/store';
-import { sendMessage, editMessage, setEditingMessage, setReplyingTo } from '../../store/slices/messageSlice';
-import { updateChatroomLastMessage } from '../../store/slices/chatroomSlice';
+import { editMessage, setEditingMessage, setReplyingTo } from '../../store/slices/messageSlice';
 import socketService from '../../services/socket';
 import { MdSend, MdCheck, MdClose, MdInsertEmoticon } from 'react-icons/md';
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
@@ -68,6 +67,13 @@ export const MessageInput = ({ chatroomId }: MessageInputProps) => {
     const handleSend = async () => {
         if (!message.trim()) return;
 
+        // Clear typing indicator immediately
+        socketService.sendTyping(chatroomId, false);
+        if (typingTimeoutRef.current) {
+            window.clearTimeout(typingTimeoutRef.current);
+            typingTimeoutRef.current = null;
+        }
+
         if (editingMessage && editingMessage.chatroomId === chatroomId) {
             // Update existing message
             const result = await dispatch(editMessage({
@@ -80,20 +86,17 @@ export const MessageInput = ({ chatroomId }: MessageInputProps) => {
                 dispatch(setEditingMessage(null)); // Exit edit mode
             }
         } else {
-            // Send new message (possibly with reply)
-            const result = await dispatch(sendMessage({
+            // Send new message via socket (socket-based)
+            socketService.sendMessage({
                 chatroomId,
                 content: message,
                 quotedMessageId: replyingTo?._id
-            }));
+            });
 
-            if (sendMessage.fulfilled.match(result)) {
-                socketService.emitMessageSent(chatroomId, result.payload);
-                dispatch(updateChatroomLastMessage({ chatroomId, message: result.payload }));
-                setMessage('');
-                if (replyingTo) {
-                    dispatch(setReplyingTo(null));
-                }
+            // Clear input immediately (optimistic update)
+            setMessage('');
+            if (replyingTo) {
+                dispatch(setReplyingTo(null));
             }
         }
         setShowPicker(false);

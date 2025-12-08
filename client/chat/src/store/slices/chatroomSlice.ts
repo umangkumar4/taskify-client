@@ -93,6 +93,23 @@ const chatroomSlice = createSlice({
             if (!state.chatrooms.some(c => c._id === chatroom._id)) {
                 state.chatrooms.unshift(chatroom);
             }
+        },
+        handleMessageDeleted: (state, action) => {
+            const { chatroomId, messageId, newLastMessage } = action.payload;
+            const chatroom = state.chatrooms.find((c) => c._id === chatroomId);
+            if (chatroom && chatroom.lastMessage?.messageId === messageId) {
+                // Update with new last message or clear it
+                if (newLastMessage) {
+                    chatroom.lastMessage = {
+                        messageId: newLastMessage._id,
+                        content: newLastMessage.content,
+                        senderId: newLastMessage.senderId._id || newLastMessage.senderId,
+                        timestamp: newLastMessage.createdAt
+                    };
+                } else {
+                    chatroom.lastMessage = undefined;
+                }
+            }
         }
     },
     extraReducers: (builder) => {
@@ -108,8 +125,8 @@ const chatroomSlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message || 'Failed to fetch chatrooms';
             })
-            .addCase(createChatroom.fulfilled, (state, action) => {
-                state.chatrooms.unshift(action.payload);
+            .addCase(createChatroom.fulfilled, () => {
+                // Don't add here - socket event will handle it to prevent duplicates
             })
             .addCase(addMembers.fulfilled, (state, action) => {
                 if (state.selectedChatroom?._id === action.payload._id) {
@@ -119,9 +136,12 @@ const chatroomSlice = createSlice({
                 if (index !== -1) {
                     state.chatrooms[index] = action.payload;
                 }
+            })
+            .addCase(createChatroom.rejected, () => {
+                // Error handling if needed
             });
     }
 });
 
-export const { setSelectedChatroom, updateChatroomLastMessage, addChatroom, setTypingStatus } = chatroomSlice.actions;
+export const { setSelectedChatroom, updateChatroomLastMessage, addChatroom, setTypingStatus, handleMessageDeleted } = chatroomSlice.actions;
 export default chatroomSlice.reducer;

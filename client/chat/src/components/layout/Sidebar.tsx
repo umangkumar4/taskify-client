@@ -62,17 +62,17 @@ export const Sidebar = () => {
     return (
         <div className="w-full h-full flex flex-col bg-white">
             {/* Header */}
-            <div className="h-16 bg-[#F0F2F5] px-4 flex items-center justify-between border-b border-gray-200 shrink-0">
+            <div className="h-20 bg-gradient-to-r from-[#1e3a5f] to-[#2d5a7b] px-4 flex items-center justify-between border-b border-gray-600 shadow-lg shrink-0">
                 <div className="flex items-center gap-3">
                     {/* Compact Logo */}
                     <div className="">
-                        <Logo className="w-20 h-20" textClassName="text-lg" />
+                        <Logo className="w-20 h-20" textClassName="text-lg text-white" />
                     </div>
                 </div>
-                <div className="flex gap-2 text-[#54656F] items-center">
+                <div className="flex gap-2 text-white items-center">
                     <button
                         onClick={() => setIsModalOpen(true)}
-                        className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+                        className="p-2 hover:bg-white/10 rounded-full transition-colors"
                         title="New Chat"
                     >
                         <MdChat className="w-6 h-6" />
@@ -81,15 +81,15 @@ export const Sidebar = () => {
                     <div className="relative" ref={menuRef}>
                         <button
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
-                            className={`p-2 hover:bg-gray-200 rounded-full transition-colors ${isMenuOpen ? 'bg-gray-200' : ''}`}
+                            className={`p-2 hover:bg-white/10 rounded-full transition-colors ${isMenuOpen ? 'bg-white/10' : ''}`}
                             title="Menu"
                         >
                             <MdMoreVert className="w-6 h-6" />
                         </button>
 
                         {isMenuOpen && (
-                            <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-xl py-2 z-50 border border-gray-100 animate-in fade-in zoom-in-95 duration-200 origin-top-right">
-                                <div className="px-4 py-2 border-b border-gray-100 mb-1">
+                            <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-xl py-2 z-50 border border-gray-200 animate-in fade-in zoom-in-95 duration-200 origin-top-right">
+                                <div className="px-4 py-2 border-b border-gray-200 mb-1">
                                     <p className="text-sm font-semibold text-gray-800">{user?.username}</p>
                                     <p className="text-xs text-gray-500 truncate">{user?.email}</p>
                                 </div>
@@ -104,11 +104,11 @@ export const Sidebar = () => {
                         )}
 
                     </div>
-                    <div className="h-16 bg-[#F0F2F5] flex items-center justify-between border-b border-gray-200 shrink-0">
+                    <div className="flex items-center justify-between shrink-0">
                         <img
                             src={user?.avatar}
                             alt="Profile"
-                            className="w-10 h-10 rounded-full object-cover cursor-pointer border-2 border-transparent hover:border-gray-300 transition-all"
+                            className="w-12 h-12 rounded-full object-cover cursor-pointer border-2 border-white/30 hover:border-white/60 transition-all shadow-md"
                             title={user?.username}
                         />
                     </div>

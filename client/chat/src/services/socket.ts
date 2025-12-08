@@ -13,11 +13,9 @@ class SocketService {
         });
 
         this.socket.on('connect', () => {
-            console.log('Socket connected');
         });
 
         this.socket.on('disconnect', () => {
-            console.log('Socket disconnected');
         });
 
         this.socket.on('connect_error', (error) => {
@@ -50,6 +48,12 @@ class SocketService {
         }
     }
 
+    sendMessage(data: { chatroomId: string; content: string; quotedMessageId?: string; mentions?: string[] }): void {
+        if (this.socket) {
+            this.socket.emit('send-message', data);
+        }
+    }
+
     emitMessageSent(chatroomId: string, message: any): void {
         if (this.socket) {
             this.socket.emit('message-sent', { chatroomId, message });
@@ -71,6 +75,7 @@ class SocketService {
     on(event: string, callback: (data: any) => void): void {
         if (this.socket) {
             this.socket.on(event, callback);
+        } else {
         }
     }
 

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
-import { fetchChatrooms, setTypingStatus } from '../store/slices/chatroomSlice';
+import { fetchChatrooms, setTypingStatus, setSelectedChatroom } from '../store/slices/chatroomSlice';
 import { useSocket } from '../hooks/useSocket';
 import { Sidebar } from '../components/layout/Sidebar';
 import { ChatArea } from '../components/chat/ChatArea';
@@ -35,6 +35,30 @@ export const Chat = () => {
             socket.off('typing');
         };
     }, [socket, dispatch]);
+
+    // Handle mobile back button to prevent app closing
+    useEffect(() => {
+        // Push a state when a chat is selected
+        if (selectedChatroom) {
+            window.history.pushState({ chatSelected: true }, '');
+        }
+
+        const handlePopState = (event: PopStateEvent) => {
+            // If user presses back while in a chat, go back to chatroom list
+            if (selectedChatroom) {
+                event.preventDefault();
+                dispatch(setSelectedChatroom(null));
+                // Push state again to prevent app from closing
+                window.history.pushState({ chatSelected: false }, '');
+            }
+        };
+
+        window.addEventListener('popstate', handlePopState);
+
+        return () => {
+            window.removeEventListener('popstate', handlePopState);
+        };
+    }, [selectedChatroom, dispatch]);
 
     return (
         <div className="h-screen flex bg-gray-100 relative overflow-hidden">

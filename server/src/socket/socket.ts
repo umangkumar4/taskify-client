@@ -1,7 +1,10 @@
 import { Server as HTTPServer } from 'http';
 import { Server, Socket } from 'socket.io';
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 import { User } from '../models/User';
+import { Message } from '../models/Message';
+import { Chatroom } from '../models/Chatroom';
 
 export let io: Server;
 
@@ -102,6 +105,79 @@ export const initializeSocket = (httpServer: HTTPServer) => {
             socket.to(data.chatroomId).emit('new-message', data.message);
         });
 
+        // Send message via socket (new socket-based flow)
+        socket.on('send-message', async (data: any) => {
+            try {
+                const { chatroomId, content, quotedMessageId, mentions } = data;
+
+                if (!chatroomId || !content) {
+                    socket.emit('message-error', { error: 'Chatroom ID and content are required' });
+                    return;
+                }
+
+                // Verify user is member
+                const chatroom = await Chatroom.findOne({
+                    _id: chatroomId,
+                    'members.userId': socket.user?._id
+                });
+
+                if (!chatroom) {
+                    socket.emit('message-error', { error: 'Not a member of this chatroom' });
+                    return;
+                }
+
+                // Get quoted message if exists
+                let quotedMessage = undefined;
+                if (quotedMessageId) {
+                    const quoted = await Message.findById(quotedMessageId);
+                    if (quoted) {
+                        quotedMessage = {
+                            messageId: quoted._id,
+                            content: quoted.content,
+                            senderId: quoted.senderId
+                        };
+                    }
+                }
+
+                // Create message
+                const message = await Message.create({
+                    chatroomId: new mongoose.Types.ObjectId(chatroomId),
+                    senderId: new mongoose.Types.ObjectId(socket.user!._id),
+                    content,
+                    quotedMessage,
+                    mentions: mentions || [],
+                    readBy: [{ userId: new mongoose.Types.ObjectId(socket.user!._id), readAt: new Date() }]
+                });
+
+                const populatedMessage = await message.populate('senderId', 'username firstName lastName avatar');
+                if (quotedMessage) {
+                    await populatedMessage.populate('quotedMessage.senderId', 'username firstName lastName avatar');
+                }
+
+                // Update chatroom last message
+                chatroom.lastMessage = {
+                    messageId: populatedMessage._id as any,
+                    content: populatedMessage.content,
+                    senderId: new mongoose.Types.ObjectId(socket.user!._id),
+                    timestamp: populatedMessage.createdAt
+                };
+                await chatroom.save();
+
+                // Convert to plain object and ensure IDs are strings for frontend
+                const messageObject: any = populatedMessage.toObject();
+                messageObject.chatroomId = messageObject.chatroomId.toString();
+                messageObject._id = messageObject._id.toString();
+
+                console.log('Emitting new-message to chatroom:', chatroomId, messageObject);
+
+                // Broadcast to ALL users in chatroom (including sender)
+                io.to(chatroomId).emit('new-message', messageObject);
+            } catch (error: any) {
+                console.error('Error sending message:', error);
+                socket.emit('message-error', { error: error.message });
+            }
+        });
+
         // Message edited
         socket.on('message-edited', (data: any) => {
             socket.to(data.chatroomId).emit('message-updated', data.message);
@@ -110,7 +186,8 @@ export const initializeSocket = (httpServer: HTTPServer) => {
         // Message deleted
         socket.on('message-deleted', (data: any) => {
             socket.to(data.chatroomId).emit('message-deleted', {
-                messageId: data.messageId
+                messageId: data.messageId,
+                chatroomId: data.chatroomId
             });
         });
 

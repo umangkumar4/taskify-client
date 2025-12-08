@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useLayoutEffect } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../store/store';
 import { fetchMessages } from '../../store/slices/messageSlice';
@@ -101,24 +101,24 @@ export const ChatArea = () => {
     return (
         <div className="flex-1 flex flex-col h-full bg-[var(--chat-bg)]">
             {/* Header */}
-            <div className="h-16 bg-[#F0F2F5] px-4 flex items-center justify-between border-b border-gray-200 shadow-sm z-10">
+            <div className="h-20 bg-gradient-to-r from-[#1e3a5f] to-[#2d5a7b] px-4 flex items-center justify-between border-b border-gray-600 shadow-lg z-10">
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => dispatch(setSelectedChatroom(null))}
-                        className="md:hidden p-2 -ml-2 hover:bg-gray-200 rounded-full text-gray-600"
+                        className="md:hidden p-2 -ml-2 hover:bg-white/10 rounded-full text-white transition-colors"
                     >
                         <MdArrowBack className="w-6 h-6" />
                     </button>
-                    <div className={`w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-white overflow-hidden ${!selectedChatroom.avatar ? getAvatarColor(selectedChatroom.name) : 'bg-gray-300'}`}>
+                    <div className={`w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-white overflow-hidden shadow-md ${!selectedChatroom.avatar ? getAvatarColor(selectedChatroom.name) : 'bg-gray-300'}`}>
                         {selectedChatroom.avatar ? (
                             <img src={selectedChatroom.avatar} alt={selectedChatroom.name} className="w-full h-full object-cover" />
                         ) : (
-                            <span className="text-lg">{selectedChatroom.name[0]?.toUpperCase() + selectedChatroom.name[1]?.toUpperCase()}</span>
+                            <span className="text-lg font-semibold">{selectedChatroom.name[0]?.toUpperCase() + selectedChatroom.name[1]?.toUpperCase()}</span>
                         )}
                     </div>
                     <div>
-                        <h2 className="font-semibold text-gray-800">{selectedChatroom.name}</h2>
-                        <p className="text-xs text-gray-500 truncate max-w-xs">
+                        <h2 className="font-semibold text-white text-lg">{selectedChatroom.name}</h2>
+                        <p className="text-xs text-gray-200 truncate max-w-xs">
                             {selectedChatroom.members.map(m => m.userId.username).join(', ')}
                         </p>
                     </div>
@@ -129,7 +129,7 @@ export const ChatArea = () => {
                     {selectedChatroom.type === 'group' && (
                         <button
                             onClick={() => setIsAddMemberOpen(true)}
-                            className="p-2 hover:bg-gray-200 rounded-full text-gray-600"
+                            className="p-2 hover:bg-white/10 rounded-full text-white transition-colors"
                             title="Add Members"
                         >
                             <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
@@ -137,7 +137,7 @@ export const ChatArea = () => {
                             </svg>
                         </button>
                     )}
-                    <button className="p-2 hover:bg-gray-200 rounded-full text-gray-600">
+                    <button className="p-2 hover:bg-white/10 rounded-full text-white transition-colors">
                         <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
                             <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path>
                         </svg>
